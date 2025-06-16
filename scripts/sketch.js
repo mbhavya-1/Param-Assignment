@@ -21,6 +21,15 @@ let maxPopulation = 0;
 
 let eatMode = 0;
 
+ let foodImage, preyImage, predatorImage;
+
+    function preload() {
+        foodImage = loadImage('./images/plant.avif');
+        preyImage = loadImage('./images/rabbit.webp');
+        predatorImage = loadImage('./images/wolf.webp');
+    }
+
+
 
 function setup() {
     // Set up canvas
@@ -40,7 +49,7 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    background(144, 238, 144);
 
     if (!paused) {
         // Update history with current population values
@@ -199,6 +208,16 @@ function reset() {
 // Spawn entity at position
 function spawnEntity(x, y, type) {
     let e = new Entity(x, y);
+    if (type === 'food') {
+        e.image = foodImage;
+        e.model = MODEL.circle;
+    } else if (type === 'prey') {
+        e.image = preyImage;
+        e.model = MODEL.pointy; // Rotates with movement
+    } else if (type === 'predator') {
+        e.image = predatorImage;
+        e.model = MODEL.pointy; // Rotates with movement
+    }
     applyTemplate(e, ENTITY[type]);
     e.init();
     newEntities.push(e);

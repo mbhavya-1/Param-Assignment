@@ -108,7 +108,7 @@ class Entity {
     display() {
         let alpha = this.hunger / this.maxHunger * 215 + 40;
         this.color.setAlpha(alpha);
-        this.model(alpha);
+        this.model(this, alpha);
 
         // Display hitbox
         if (keyIsDown(72)) {
@@ -225,9 +225,52 @@ class Entity {
     }
 
     // Spawn a new child entity, apply mutations
+    // spawnChild() {
+    //     let e = new Entity(this.pos.x, this.pos.y);
+    //     applyTemplate(e, ENTITY[this.type]);
+
+    //     // Apply mutations
+    //     let c = color(this.color.toString());
+    //     let levels = c.levels;
+    //     c.setRed(mutate(levels[0], 10));
+    //     c.setGreen(mutate(levels[1], 10));
+    //     c.setBlue(mutate(levels[2], 10));
+    //     e.color = c;
+
+    //     if (random() < 0.05) e.multipleAvoid = !this.multipleAvoid;
+    //     if (random() < 0.05) e.multiplePursue = !this.multiplePursue;
+    //     e.perception = mutate(this.perception, 10);
+    //     e.priorityAvoid = mutate(this.priorityAvoid, 0.1);
+    //     e.priorityPursue = mutate(this.priorityPursue, 0.1);
+
+    //     e.childrenBase = mutate(this.childrenBase, 0.1);
+    //     e.childrenExtra = mutate(this.childrenExtra, 0.1);
+    //     e.hunger = mutate(this.hunger, 10);
+    //     e.reproduceChance = mutate(this.reproduceChance, 0.01, 1);
+
+    //     e.r = mutate(this.r, 1);
+    //     e.maxForce = mutate(this.maxForce, 0.01);
+    //     e.maxSpeed = mutate(this.maxSpeed, 0.1);
+
+    //     e.init();
+    //     newEntities.push(e);
+    // }
+
     spawnChild() {
         let e = new Entity(this.pos.x, this.pos.y);
         applyTemplate(e, ENTITY[this.type]);
+
+        // Assign image and model based on type
+        if (this.type === 'food') {
+            e.image = foodImage;
+            e.model = MODEL.circle;
+        } else if (this.type === 'prey') {
+            e.image = preyImage;
+            e.model = MODEL.pointy;
+        } else if (this.type === 'predator') {
+            e.image = predatorImage;
+            e.model = MODEL.pointy;
+        }
 
         // Apply mutations
         let c = color(this.color.toString());

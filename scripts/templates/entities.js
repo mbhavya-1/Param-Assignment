@@ -5,6 +5,7 @@ ENTITY.food = {
     perception: 0,
     // Display
     color: '#2ECC71',
+    imgSize: 40,
     // Misc
     canStarve: false,
     foodDropChance: 0,
