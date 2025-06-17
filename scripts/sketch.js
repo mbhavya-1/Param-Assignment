@@ -24,27 +24,26 @@ let eatMode = 0;
  let foodImage, preyImage, predatorImage;
 
     function preload() {
-        foodImage = loadImage('./images/plant.avif');
-        preyImage = loadImage('./images/rabbit.webp');
+        foodImage = loadImage('./images/plant.png');
+        preyImage = loadImage('./images/rabbit.png');
         predatorImage = loadImage('./images/wolf.webp');
     }
 
 
 
 function setup() {
-    // Set up canvas
+
+    frameRate(20);
+
     let sketch = document.getElementById('sketch');
     let canvas = createCanvas(sketch.offsetWidth, sketch.offsetHeight);
     canvas.parent(sketch);
     resizeCanvas(sketch.offsetWidth, sketch.offsetHeight, true);
 
-    // Initialize drawing modes
     ellipseMode(RADIUS);
 
-    // Spawn entities
     reset();
 
-    // Set maximum history based on canvas size
     maxHist = ceil(width / 3);
 }
 
@@ -52,39 +51,34 @@ function draw() {
     background(144, 238, 144);
 
     if (!paused) {
-        // Update history with current population values
+
         updateHistory();
 
-        // Spawn food
         if (!toLimitEntities() && random() < 0.5) {
             spawnEntity(random(width), random(height), 'food');
         }
     }
 
-    // Update and display all entities
     for (let i = entities.length - 1; i >= 0; i--) {
         let e = entities[i];
         if (!e.dead) e.act(entities);
 
-        // Remove if dead
         if (e.dead) {
             entities.splice(i, 1);
             e.onDeath();
         }
     }
 
-    // Add new entities
     if (!paused) {
         entities = entities.concat(newEntities);
         newEntities = [];
     }
 
-    // Display population history
     if (dispGraph) lineGraph();
 }
 
 function keyPressed() {
-    // Change preset
+
     let n = parseInt(key);
     if (n) {
         n--;
@@ -92,10 +86,8 @@ function keyPressed() {
         reset();
     }
 
-    // Toggle pause state
     if (key === ' ') paused = !paused;
 
-    // Cycle between eating modes
     if (key === 'E') {
         eatMode++;
         if (eatMode > 2) eatMode = 0;
@@ -103,13 +95,10 @@ function keyPressed() {
         document.getElementById('eatMode').innerHTML = 'Eat mode: ' + eatMode;
     }
 
-    // Toggle graph
     if (key === 'G') dispGraph = !dispGraph;
 
-    // Reset simulation
     if (key === 'R') reset();
 
-    // Entity selection
     if (key === 'F') selected = 'food';
     if (key === 'B') selected = 'prey';
     if (key === 'P') selected = 'predator';
@@ -124,35 +113,30 @@ function mousePressed() {
 }
 
 
-// Count each type of entity
 function countTypes(arr) {
     let types = {};
 
-    // Add all types
     let keys = Object.keys(ENTITY);
     for (let i = 0; i < keys.length; i++) {
         types[keys[i]] = 0;
     }
 
-    // Count each entity
     for (let i = 0; i < arr.length; i++) {
         types[arr[i].type]++;
     }
 
-    // Update maximum entity count
     if (entities.length > maxPopulation) maxPopulation = entities.length;
 
     return types;
 }
 
-// Draw a line graph of each entity type population
 function lineGraph() {
-    // Transparent rect behind graph
+
     fill(0, 127);
     noStroke();
     rect(0, 25, hist.length, 150);
 
-    // Plot the history of each type
+
     let types = Object.keys(hist[0]);
     noFill();
     strokeWeight(2);
@@ -169,28 +153,27 @@ function lineGraph() {
     }
     strokeWeight(1);
 
-    // Draw line at current draw location
     stroke(204);
     line(hist.length, 25, hist.length, 175);
 }
 
-// Return whether entity count is high enough to begin slowdown
+
 function toLimitEntities() {
     return entities.length + newEntities.length >= 600;
 }
 
-// Update history based on entities
+
 function updateHistory() {
     hist.push(countTypes(entities));
     if (hist.length > maxHist) hist.shift();
 }
 
-// Reset entities
+
 function reset() {
     entities = [];
     newEntities = [];
 
-    // Spawn entities from preset
+
     let preset = presets[selectedPreset];
     let keys = Object.keys(preset);
     for (let i = 0; i < keys.length; i++) {
@@ -201,22 +184,21 @@ function reset() {
         }
     }
 
-    // Reset the history
     hist = [];
 }
 
-// Spawn entity at position
+
 function spawnEntity(x, y, type) {
     let e = new Entity(x, y);
     if (type === 'food') {
         e.image = foodImage;
-        e.model = MODEL.circle;
+        e.model = MODEL.food;
     } else if (type === 'prey') {
         e.image = preyImage;
-        e.model = MODEL.pointy; // Rotates with movement
+        e.model = MODEL.prey; 
     } else if (type === 'predator') {
         e.image = predatorImage;
-        e.model = MODEL.pointy; // Rotates with movement
+        e.model = MODEL.predator; 
     }
     applyTemplate(e, ENTITY[type]);
     e.init();

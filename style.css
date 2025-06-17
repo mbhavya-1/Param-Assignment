@@ -8,7 +8,6 @@
 }
 
 
-/* Colors */
 
 :root {
     --accent1: #2ECC71;
@@ -19,7 +18,6 @@
 }
 
 
-/* Page structure */
 
 body {
     background-color: var(--bg);
